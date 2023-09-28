@@ -1,0 +1,913 @@
+set cut_paste_input [stack 0]
+version 12.2 v7
+push $cut_paste_input
+Group {
+ name ColourDilate2
+ knobChanged "\ntn = nuke.thisNode()\ntk = nuke.thisKnob()\n\nfullList =  tn\['fullList'].value().strip(\"\[']\").split(\"', '\")\nnodeList = fullList\[0], fullList\[1], fullList\[2], fullList\[3], fullList\[4], fullList\[5]\npreviousLoopNum = tn\['previousLoopNum'].getValue()\n\ngrowTexture = tn\['growTexture'].getValue()\nqualityVal = int( tn\['quality'].getValue() )\n\n\n##### DEFINE VALUE CHANGES ##################\n\ndef valChange():\n    qualityBias = tn\['qualityBias'].getValue()\n    for i in range (0, qualityVal):\n        blurVal = nuke.toNode(fullList\[i*len(nodeList)])\n        erodeVal = nuke.toNode(fullList\[i*len(nodeList)+3])\n        if isinstance(growTexture, float) == True:\n            blurVal\['size'].setValue( (growTexture/qualityVal*(i+1)*(1-qualityBias)) + (growTexture/qualityVal*(i+1)) * (qualityBias*(pow(i+1, 2)/pow(qualityVal, 2))) )\n            erodeVal\['size'].setValue(blurVal\['size'].getValue()/2)\n        else:\n            blurVal\['size'].setValue(\[ (growTexture\[0]/qualityVal*(i+1)*(1-qualityBias)) + (growTexture\[0]/qualityVal*(i+1)) * (qualityBias*(pow(i+1, 2)/pow(qualityVal, 2))) , (growTexture\[1]/qualityVal*(i+1)*(1-qualityBias)) + (growTexture\[1]/qualityVal*(i+1)) * (qualityBias*(pow(i+1, 2)/pow(qualityVal, 2))) ])\n            erodeVal\['size'].setValue(\[blurVal\['size'].getValue()\[0]/2,blurVal\['size'].getValue()\[1]/2])\n\ndef filterChange():\n    filters = int( tn\['filter'].getValue() )\n    filterQuality = int( tn\['filterQuality'].getValue() )\n    crop = int( tn\['crop'].getValue() )\n    for i in range (0, qualityVal):\n        blurVal = nuke.toNode(fullList\[i*len(nodeList)])\n        blurVal\['filter'].setValue( filters )\n        blurVal\['quality'].setValue( filterQuality )\n        blurVal\['crop'].setValue( crop )\n\n\n##### CREATE THE NODES ###################\n\nif tk.name()=='quality':\n    if qualityVal < 1:\n        qualityVal = 1\n    elif qualityVal >100:\n        qualityVal = 100\n    tn\['quality'].setValue( qualityVal )\n    \n\n    if qualityVal != previousLoopNum:\n\n\n        inputDep = nuke.dependencies(\[nuke.toNode('Unpremult1')], nuke.INPUTS)\n        resultOver = nuke.toNode( inputDep\[0].name() )\n\n        difference = qualityVal-previousLoopNum\n        if difference > 0:\n            for i in range (1, int(difference+1)):\n                \n                blur = nuke.nodes.Blur ()\n                blur\['channels'].setValue('rgba')\n                blur\['maskChannelInput'].setValue('none')\n                blur.setInput (0, nuke.toNode('Switch2'))\n                \n                unpremult = nuke.nodes.Unpremult ()\n                unpremult\['channels'].setValue('rgb')\n                unpremult\['alpha'].setValue('rgba.alpha')\n                unpremult\['invert'].setValue(0)\n                unpremult.setInput (0, blur)\n                \n                expression = nuke.nodes.Expression(expr3 = 'a==0?0:1')\n                expression.setInput (0, unpremult)\n                \n                erode = nuke.nodes.FilterErode ()\n                erode\['channels'].setValue( 'rgba.alpha' )\n                erode\['filter'].setValue( 'gaussian' )\n                erode.setInput (0, expression)\n                \n                premult = nuke.nodes.Premult ()\n                premult\['channels'].setValue( 'rgb' )\n                premult\['alpha'].setValue( 'rgba.alpha' )\n                premult.setInput (0, erode)\n                \n                mergeOver = nuke.nodes.Merge2 ()\n                mergeOver\['operation'].setValue( 'over' )\n                mergeOver\['sRGB'].setValue( 0 )\n                mergeOver\['screen_alpha'].setValue( 0 )\n                mergeOver\['bbox'].setValue( 'union' )\n                mergeOver\['Achannels'].setValue( 'rgba' )\n                mergeOver\['Bchannels'].setValue( 'rgba' )\n                mergeOver\['output'].setValue( 'rgba' )\n                mergeOver\['also_merge'].setValue( 'none' )\n                mergeOver.setInput (0, premult)\n                mergeOver.setInput (1, resultOver)\n                \n                \n                resultOver = mergeOver\n                \n                \n                nodeList = blur.name(), unpremult.name(), expression.name(), erode.name(), premult.name(), resultOver.name()\n                fullList.extend(nodeList)\n\n\n##### DELETE THE NODES ##################################\n\n        else:\n            fullList.reverse()\n            for i in range (int(qualityVal), int(previousLoopNum)):\n                for i in range (0, len(nodeList)):\n                    nuke.delete(nuke.toNode(fullList\[0]))\n                    del fullList\[0]\n                resultOver = nuke.toNode(fullList\[0])\n                resultExpression = nuke.toNode(fullList\[3])\n            fullList.reverse()\n\n        nuke.toNode('Unpremult1').setInput(0, resultOver)\n        valChange()\n        filterChange()\n                \n        previousLoopNum = qualityVal\n        \n        tn\['previousLoopNum'].setValue( int(previousLoopNum) )\n        tn\['fullList'].setValue( str(fullList) )\n\n\n\n##### CHANGE EXISTING VALUES #####################\n\nif tk.name()=='growTexture':\n    valChange()\n    \nif tk.name()=='qualityBias':\n    valChange()\n    \nif tk.name()=='filter':\n    filterChange()\n    \nif tk.name()=='filterQuality':\n    filterChange()\n    \nif tk.name()=='crop':\n    filterChange()\n\n\n"
+ selected true
+ xpos -119
+ ypos 186
+ addUserKnob {20 User l fColourDilate}
+ addUserKnob {14 growTexture l "Grow Texture" R 0 100}
+ growTexture 700
+ addUserKnob {14 erodeMatte l "Erode Matte" t "Dilate or erode the matte to adjust the grow start paint" R -100 100}
+ erodeMatte -30
+ addUserKnob {7 expandMatte l "Expand Matte" t "Expand or compress the matte to adjust the grow start point" R -0.99999 0.99999}
+ addUserKnob {7 quality l Iterations t "The number of iterations Colour Dilate will go through.  More is slower.  Max steps is 100" R 1 20}
+ quality 20
+ addUserKnob {7 qualityBias l Distribution t "0 is a linear distribution.  1 is exponential distribution.\nExponential is smoother with low quality.\nLinear is better with high quality."}
+ qualityBias 1
+ addUserKnob {4 filter l Filter t "filter\n" M {box triangle quadratic gaussian ""}}
+ filter gaussian
+ addUserKnob {3 filterQuality l " " -STARTLINE}
+ filterQuality 50
+ addUserKnob {6 crop l "crop to format" -STARTLINE}
+ addUserKnob {4 matteOutput l "Matte Output" M {rgb.alpha matte "dilated matte" "dilated area" "" ""}}
+ matteOutput "dilated area"
+ addUserKnob {26 blank l "" -STARTLINE T "      "}
+ addUserKnob {6 invertMatte l "invert Matte" -STARTLINE}
+ invertMatte true
+ addUserKnob {26 blank2 l "" -STARTLINE T "      "}
+ addUserKnob {6 rgbIsPremult l "RGB is Premult?" -STARTLINE}
+ addUserKnob {1 colorDilate l INVISIBLE t "Keep me hidden" +INVISIBLE}
+ addUserKnob {3 previousLoopNum l INVISIBLE +INVISIBLE}
+ previousLoopNum 20
+ addUserKnob {1 fullList l INVISIBLE +INVISIBLE}
+ fullList "\['Blur1', 'Unpremult2', 'Expression1', 'FilterErode2', 'Premult1', 'Merge2', 'Blur2', 'Unpremult3', 'Expression2', 'FilterErode3', 'Premult2', 'Merge4', 'Blur3', 'Unpremult4', 'Expression3', 'FilterErode4', 'Premult3', 'Merge5', 'Blur4', 'Unpremult5', 'Expression4', 'FilterErode5', 'Premult4', 'Merge6', 'Blur5', 'Unpremult6', 'Expression5', 'FilterErode6', 'Premult5', 'Merge7', 'Blur6', 'Unpremult7', 'Expression6', 'FilterErode7', 'Premult6', 'Merge8', 'Blur7', 'Unpremult8', 'Expression7', 'FilterErode8', 'Premult7', 'Merge9', 'Blur8', 'Unpremult9', 'Expression9', 'FilterErode9', 'Premult8', 'Merge10', 'Blur9', 'Unpremult10', 'Expression10', 'FilterErode10', 'Premult9', 'Merge11', 'Blur10', 'Unpremult11', 'Expression11', 'FilterErode11', 'Premult10', 'Merge12', 'Blur11', 'Unpremult12', 'Expression12', 'FilterErode12', 'Premult11', 'Merge13', 'Blur12', 'Unpremult13', 'Expression13', 'FilterErode13', 'Premult12', 'Merge14', 'Blur13', 'Unpremult14', 'Expression14', 'FilterErode14', 'Premult13', 'Merge15', 'Blur14', 'Unpremult15', 'Expression15', 'FilterErode15', 'Premult14', 'Merge16', 'Blur15', 'Unpremult16', 'Expression16', 'FilterErode16', 'Premult15', 'Merge17', 'Blur16', 'Unpremult17', 'Expression17', 'FilterErode17', 'Premult16', 'Merge18', 'Blur17', 'Unpremult18', 'Expression18', 'FilterErode18', 'Premult17', 'Merge19', 'Blur18', 'Unpremult19', 'Expression19', 'FilterErode19', 'Premult18', 'Merge20', 'Blur19', 'Unpremult20', 'Expression20', 'FilterErode20', 'Premult19', 'Merge21', 'Blur20', 'Unpremult21', 'Expression21', 'FilterErode21', 'Premult20', 'Merge22']"
+}
+ Input {
+  inputs 0
+  name InputMask
+  xpos 803
+  ypos -665
+  number 1
+ }
+set N735f7900 [stack 0]
+ AddChannels {
+  channels alpha
+  name AddChannels2
+  xpos 463
+  ypos 549
+ }
+ Dot {
+  name Dot3
+  xpos 497
+  ypos 609
+ }
+ Input {
+  inputs 0
+  name InputRGB
+  xpos 1013
+  ypos -531
+ }
+set N735f5d00 [stack 0]
+ AddChannels {
+  channels alpha
+  name AddChannels1
+  xpos 393
+  ypos 461
+ }
+ Dot {
+  name Dot2
+  xpos 427
+  ypos 527
+ }
+push $N735f7900
+ FilterErode {
+  channels alpha
+  size {{invertMatte==0?erodeMatte.w:-erodeMatte.w i} {invertMatte==0?erodeMatte.h:-erodeMatte.h i}}
+  name FilterErode1
+  xpos 803
+  ypos -621
+ }
+ Invert {
+  channels alpha
+  mix {{invertMatte i}}
+  name Invert2
+  xpos 803
+  ypos -563
+ }
+ Grade {
+  channels alpha
+  blackpoint {{"clamp(expandMatte, 0, 1)" i}}
+  whitepoint {{"clamp(1+expandMatte, 0, 1)" i}}
+  white_clamp true
+  name Grade1
+  xpos 803
+  ypos -505
+ }
+ Grade {
+  channels alpha
+  whitepoint 0.5
+  black_clamp false
+  white_clamp true
+  name Grade6
+  xpos 803
+  ypos -345
+ }
+ Dot {
+  name Dot1
+  xpos 837
+  ypos -287
+ }
+set N73afb900 [stack 0]
+push $N735f5d00
+ AddChannels {
+  channels alpha
+  name AddChannels3
+  xpos 1120
+  ypos -444
+ }
+push $N735f5d00
+ Shuffle {
+  alpha white
+  name Shuffle1
+  xpos 1013
+  ypos -458
+ }
+ Crop {
+  box {{InputRGB.bbox.x i x1001 542} {InputRGB.bbox.y i} {InputRGB.bbox.r i} {InputRGB.bbox.t i}}
+  name Crop3
+  xpos 1013
+  ypos -414
+ }
+ Switch {
+  inputs 2
+  which {{rgbIsPremult i}}
+  name Switch1
+  xpos 1013
+  ypos -370
+ }
+ Dot {
+  name Dot5
+  xpos 1047
+  ypos -326
+ }
+set N73af8f00 [stack 0]
+ Merge2 {
+  inputs 2
+  operation stencil
+  bbox intersection
+  name Merge1
+  xpos 1013
+  ypos -292
+ }
+push $N73afb900
+ Dot {
+  name Dot4
+  xpos 837
+  ypos -253
+ }
+push $N73af8f00
+ Dot {
+  name Dot6
+  xpos 946
+  ypos -326
+ }
+ Merge2 {
+  inputs 2
+  operation stencil
+  bbox B
+  name Merge3
+  xpos 912
+  ypos -258
+ }
+ Dot {
+  name Dot7
+  xpos 946
+  ypos -192
+ }
+ Switch {
+  inputs 2
+  which {{invertMatte i}}
+  name Switch2
+  xpos 1013
+  ypos -197
+ }
+set N73bf6400 [stack 0]
+push $N73bf6400
+ Blur {
+  channels rgba
+  size 0.0875
+  quality 50
+  crop false
+  name Blur1
+  xpos 1336
+  ypos -26
+ }
+ Unpremult {
+  name Unpremult2
+  xpos 1336
+  ypos 18
+ }
+ Expression {
+  expr3 a==0?0:1
+  name Expression1
+  xpos 1336
+  ypos 62
+ }
+ FilterErode {
+  channels alpha
+  size 0.04375
+  filter gaussian
+  name FilterErode2
+  xpos 1336
+  ypos 106
+ }
+ Premult {
+  name Premult1
+  xpos 1336
+  ypos 164
+ }
+ Merge2 {
+  inputs 2
+  name Merge2
+  xpos 1336
+  ypos 208
+ }
+push $N73bf6400
+ Blur {
+  channels rgba
+  size 0.7
+  quality 50
+  crop false
+  name Blur2
+  xpos 2223
+  ypos -171
+ }
+ Unpremult {
+  name Unpremult3
+  xpos 2223
+  ypos -145
+ }
+ Expression {
+  expr3 a==0?0:1
+  name Expression2
+  xpos 2223
+  ypos -119
+ }
+ FilterErode {
+  channels alpha
+  size 0.35
+  filter gaussian
+  name FilterErode3
+  xpos 2223
+  ypos -93
+ }
+ Premult {
+  name Premult2
+  xpos 2223
+  ypos -55
+ }
+ Merge2 {
+  inputs 2
+  name Merge4
+  xpos 2223
+  ypos 208
+ }
+push $N73bf6400
+ Blur {
+  channels rgba
+  size 2.3625
+  quality 50
+  crop false
+  name Blur3
+  xpos 2113
+  ypos -171
+ }
+ Unpremult {
+  name Unpremult4
+  xpos 2113
+  ypos -145
+ }
+ Expression {
+  expr3 a==0?0:1
+  name Expression3
+  xpos 2113
+  ypos -119
+ }
+ FilterErode {
+  channels alpha
+  size 1.18125
+  filter gaussian
+  name FilterErode4
+  xpos 2113
+  ypos -93
+ }
+ Premult {
+  name Premult3
+  xpos 2113
+  ypos 234
+ }
+ Merge2 {
+  inputs 2
+  name Merge5
+  xpos 2223
+  ypos 234
+ }
+push $N73bf6400
+ Blur {
+  channels rgba
+  size 5.6
+  quality 50
+  crop false
+  name Blur4
+  xpos 2003
+  ypos -171
+ }
+ Unpremult {
+  name Unpremult5
+  xpos 2003
+  ypos -145
+ }
+ Expression {
+  expr3 a==0?0:1
+  name Expression4
+  xpos 2003
+  ypos -119
+ }
+ FilterErode {
+  channels alpha
+  size 2.8
+  filter gaussian
+  name FilterErode5
+  xpos 2003
+  ypos -93
+ }
+ Premult {
+  name Premult4
+  xpos 2003
+  ypos 260
+ }
+ Merge2 {
+  inputs 2
+  name Merge6
+  xpos 2223
+  ypos 260
+ }
+push $N73bf6400
+ Blur {
+  channels rgba
+  size 10.9375
+  quality 50
+  crop false
+  name Blur5
+  xpos 1893
+  ypos -171
+ }
+ Unpremult {
+  name Unpremult6
+  xpos 1893
+  ypos -145
+ }
+ Expression {
+  expr3 a==0?0:1
+  name Expression5
+  xpos 1893
+  ypos -119
+ }
+ FilterErode {
+  channels alpha
+  size 5.46875
+  filter gaussian
+  name FilterErode6
+  xpos 1893
+  ypos -93
+ }
+ Premult {
+  name Premult5
+  xpos 1893
+  ypos 286
+ }
+ Merge2 {
+  inputs 2
+  name Merge7
+  xpos 2223
+  ypos 286
+ }
+push $N73bf6400
+ Blur {
+  channels rgba
+  size 18.9
+  quality 50
+  crop false
+  name Blur6
+  xpos 1783
+  ypos -171
+ }
+ Unpremult {
+  name Unpremult7
+  xpos 1783
+  ypos -145
+ }
+ Expression {
+  expr3 a==0?0:1
+  name Expression6
+  xpos 1783
+  ypos -119
+ }
+ FilterErode {
+  channels alpha
+  size 9.45
+  filter gaussian
+  name FilterErode7
+  xpos 1783
+  ypos -93
+ }
+ Premult {
+  name Premult6
+  xpos 1783
+  ypos 312
+ }
+ Merge2 {
+  inputs 2
+  name Merge8
+  xpos 2223
+  ypos 312
+ }
+push $N73bf6400
+ Blur {
+  channels rgba
+  size 30.0125
+  quality 50
+  crop false
+  name Blur7
+  xpos 1673
+  ypos -171
+ }
+ Unpremult {
+  name Unpremult8
+  xpos 1673
+  ypos -145
+ }
+ Expression {
+  expr3 a==0?0:1
+  name Expression7
+  xpos 1673
+  ypos -119
+ }
+ FilterErode {
+  channels alpha
+  size 15.00625
+  filter gaussian
+  name FilterErode8
+  xpos 1673
+  ypos -93
+ }
+ Premult {
+  name Premult7
+  xpos 1673
+  ypos 338
+ }
+ Merge2 {
+  inputs 2
+  name Merge9
+  xpos 2223
+  ypos 338
+ }
+push $N73bf6400
+ Blur {
+  channels rgba
+  size 44.8
+  quality 50
+  crop false
+  name Blur8
+  xpos 1563
+  ypos -171
+ }
+ Unpremult {
+  name Unpremult9
+  xpos 1563
+  ypos -145
+ }
+ Expression {
+  expr3 a==0?0:1
+  name Expression9
+  xpos 1563
+  ypos -119
+ }
+ FilterErode {
+  channels alpha
+  size 22.4
+  filter gaussian
+  name FilterErode9
+  xpos 1563
+  ypos -93
+ }
+ Premult {
+  name Premult8
+  xpos 1563
+  ypos 364
+ }
+ Merge2 {
+  inputs 2
+  name Merge10
+  xpos 2223
+  ypos 364
+ }
+push $N73bf6400
+ Blur {
+  channels rgba
+  size 63.7875
+  quality 50
+  crop false
+  name Blur9
+  xpos 1453
+  ypos -171
+ }
+ Unpremult {
+  name Unpremult10
+  xpos 1453
+  ypos -145
+ }
+ Expression {
+  expr3 a==0?0:1
+  name Expression10
+  xpos 1453
+  ypos -119
+ }
+ FilterErode {
+  channels alpha
+  size 31.89375
+  filter gaussian
+  name FilterErode10
+  xpos 1453
+  ypos -93
+ }
+ Premult {
+  name Premult9
+  xpos 1453
+  ypos 390
+ }
+ Merge2 {
+  inputs 2
+  name Merge11
+  xpos 2223
+  ypos 390
+ }
+push $N73bf6400
+ Blur {
+  channels rgba
+  size 87.5
+  quality 50
+  crop false
+  name Blur10
+  xpos 1343
+  ypos -171
+ }
+ Unpremult {
+  name Unpremult11
+  xpos 1343
+  ypos -145
+ }
+ Expression {
+  expr3 a==0?0:1
+  name Expression11
+  xpos 1343
+  ypos -119
+ }
+ FilterErode {
+  channels alpha
+  size 43.75
+  filter gaussian
+  name FilterErode11
+  xpos 1343
+  ypos -93
+ }
+ Premult {
+  name Premult10
+  xpos 1343
+  ypos -67
+ }
+ Merge2 {
+  inputs 2
+  name Merge12
+  xpos 2223
+  ypos 416
+ }
+push $N73bf6400
+ Blur {
+  channels rgba
+  size 116.4625
+  quality 50
+  crop false
+  name Blur11
+ }
+ Unpremult {
+  name Unpremult12
+ }
+ Expression {
+  expr3 a==0?0:1
+  name Expression12
+ }
+ FilterErode {
+  channels alpha
+  size 58.23125
+  filter gaussian
+  name FilterErode12
+ }
+ Premult {
+  name Premult11
+ }
+ Merge2 {
+  inputs 2
+  name Merge13
+ }
+push $N73bf6400
+ Blur {
+  channels rgba
+  size 151.2
+  quality 50
+  crop false
+  name Blur12
+ }
+ Unpremult {
+  name Unpremult13
+ }
+ Expression {
+  expr3 a==0?0:1
+  name Expression13
+ }
+ FilterErode {
+  channels alpha
+  size 75.6
+  filter gaussian
+  name FilterErode13
+ }
+ Premult {
+  name Premult12
+ }
+ Merge2 {
+  inputs 2
+  name Merge14
+ }
+push $N73bf6400
+ Blur {
+  channels rgba
+  size 192.2375
+  quality 50
+  crop false
+  name Blur13
+ }
+ Unpremult {
+  name Unpremult14
+ }
+ Expression {
+  expr3 a==0?0:1
+  name Expression14
+ }
+ FilterErode {
+  channels alpha
+  size 96.11875
+  filter gaussian
+  name FilterErode14
+ }
+ Premult {
+  name Premult13
+ }
+ Merge2 {
+  inputs 2
+  name Merge15
+ }
+push $N73bf6400
+ Blur {
+  channels rgba
+  size 240.1
+  quality 50
+  crop false
+  name Blur14
+ }
+ Unpremult {
+  name Unpremult15
+ }
+ Expression {
+  expr3 a==0?0:1
+  name Expression15
+ }
+ FilterErode {
+  channels alpha
+  size 120.05
+  filter gaussian
+  name FilterErode15
+ }
+ Premult {
+  name Premult14
+ }
+ Merge2 {
+  inputs 2
+  name Merge16
+ }
+push $N73bf6400
+ Blur {
+  channels rgba
+  size 295.3125
+  quality 50
+  crop false
+  name Blur15
+ }
+ Unpremult {
+  name Unpremult16
+ }
+ Expression {
+  expr3 a==0?0:1
+  name Expression16
+ }
+ FilterErode {
+  channels alpha
+  size 147.65625
+  filter gaussian
+  name FilterErode16
+ }
+ Premult {
+  name Premult15
+ }
+ Merge2 {
+  inputs 2
+  name Merge17
+ }
+push $N73bf6400
+ Blur {
+  channels rgba
+  size 358.4
+  quality 50
+  crop false
+  name Blur16
+ }
+ Unpremult {
+  name Unpremult17
+ }
+ Expression {
+  expr3 a==0?0:1
+  name Expression17
+ }
+ FilterErode {
+  channels alpha
+  size 179.2
+  filter gaussian
+  name FilterErode17
+ }
+ Premult {
+  name Premult16
+ }
+ Merge2 {
+  inputs 2
+  name Merge18
+ }
+push $N73bf6400
+ Blur {
+  channels rgba
+  size 429.8875
+  quality 50
+  crop false
+  name Blur17
+ }
+ Unpremult {
+  name Unpremult18
+ }
+ Expression {
+  expr3 a==0?0:1
+  name Expression18
+ }
+ FilterErode {
+  channels alpha
+  size 214.94375
+  filter gaussian
+  name FilterErode18
+ }
+ Premult {
+  name Premult17
+ }
+ Merge2 {
+  inputs 2
+  name Merge19
+ }
+push $N73bf6400
+ Blur {
+  channels rgba
+  size 510.3
+  quality 50
+  crop false
+  name Blur18
+ }
+ Unpremult {
+  name Unpremult19
+ }
+ Expression {
+  expr3 a==0?0:1
+  name Expression19
+ }
+ FilterErode {
+  channels alpha
+  size 255.15
+  filter gaussian
+  name FilterErode19
+ }
+ Premult {
+  name Premult18
+ }
+ Merge2 {
+  inputs 2
+  name Merge20
+ }
+push $N73bf6400
+ Blur {
+  channels rgba
+  size 600.1625
+  quality 50
+  crop false
+  name Blur19
+ }
+ Unpremult {
+  name Unpremult20
+ }
+ Expression {
+  expr3 a==0?0:1
+  name Expression20
+ }
+ FilterErode {
+  channels alpha
+  size 300.08125
+  filter gaussian
+  name FilterErode20
+ }
+ Premult {
+  name Premult19
+ }
+ Merge2 {
+  inputs 2
+  name Merge21
+ }
+push $N73bf6400
+ Blur {
+  channels rgba
+  size 700
+  quality 50
+  crop false
+  name Blur20
+ }
+ Unpremult {
+  name Unpremult21
+ }
+ Expression {
+  expr3 a==0?0:1
+  name Expression21
+ }
+ FilterErode {
+  channels alpha
+  size 350
+  filter gaussian
+  name FilterErode21
+ }
+ Premult {
+  name Premult20
+ }
+ Merge2 {
+  inputs 2
+  name Merge22
+ }
+ Unpremult {
+  name Unpremult1
+  xpos 269
+  ypos 435
+ }
+ Copy {
+  inputs 2
+  from0 rgba.alpha
+  to0 rgba.alpha
+  mix {{matteOutput==0?1:0 i}}
+  name Copy2
+  xpos 269
+  ypos 517
+ }
+ Copy {
+  inputs 2
+  from0 rgba.alpha
+  to0 rgba.alpha
+  mix {{matteOutput==1?1:0}}
+  name Copy1
+  xpos 269
+  ypos 599
+ }
+ Expression {
+  expr3 a<=0.000001?0:1
+  mix {{matteOutput==3?1:0}}
+  name Expression8
+  xpos 269
+  ypos 771
+ }
+push $N735f5d00
+ ShuffleCopy {
+  inputs 2
+  red red
+  green green
+  blue blue
+  name ShuffleCopy1
+  xpos 594
+  ypos 771
+ }
+ Output {
+  name Output1
+  xpos 594
+  ypos 834
+ }
+end_group

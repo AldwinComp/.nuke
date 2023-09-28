@@ -1,0 +1,31 @@
+set cut_paste_input [stack 0]
+version 12.2 v7
+push $cut_paste_input
+Grade {
+ gamma 3
+ name Grade1
+ selected true
+ xpos -1032
+ ypos -1519
+}
+OFXcom.absoft.neatvideo_v2 {
+ TFRad 1
+ TFThreshold 100
+ TFAdaptive false
+ TFInterlaced false
+ DNP ""
+ NFP ""
+ LinearInputData true
+ name "Reduce Noise1"
+ selected true
+ xpos -1030
+ ypos -1476
+}
+Grade {
+ gamma {{parent.Grade1.gamma}}
+ reverse true
+ name Grade2
+ selected true
+ xpos -1030
+ ypos -1420
+}

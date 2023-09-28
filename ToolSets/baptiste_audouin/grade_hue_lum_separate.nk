@@ -1,0 +1,66 @@
+set cut_paste_input [stack 0]
+version 12.2 v7
+push $cut_paste_input
+Dot {
+ name Dot86
+ selected true
+ xpos 11936
+ ypos 10387
+}
+set Ncf1cf200 [stack 0]
+Dot {
+ name Dot101
+ selected true
+ xpos 12072
+ ypos 10387
+}
+Saturation {
+ saturation 0
+ mode Average
+ name Saturation17
+ selected true
+ xpos 12038
+ ypos 10440
+}
+set Nd2edb900 [stack 0]
+Grade {
+ multiply 2.45
+ gamma 0.5
+ name Grade69
+ note_font "Bitstream Vera Sans"
+ selected true
+ xpos 12038
+ ypos 10614
+}
+push $Ncf1cf200
+push $Nd2edb900
+Merge2 {
+ inputs 2
+ operation divide
+ output rgb
+ name Merge128
+ label "Mix Value: \[value mix]"
+ selected true
+ xpos 11902
+ ypos 10434
+}
+Multiply {
+ channels rgb
+ value {0.22 0.74 2.014 1}
+ value_panelDropped true
+ mix 0.6
+ name Multiply8
+ selected true
+ xpos 11902
+ ypos 10508
+}
+Merge2 {
+ inputs 2
+ operation multiply
+ output rgb
+ name Merge129
+ label "Mix Value: \[value mix]"
+ selected true
+ xpos 11902
+ ypos 10608
+}

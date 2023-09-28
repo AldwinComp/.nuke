@@ -1,0 +1,14 @@
+Preferences {
+ inputs 0
+ name Preferences
+ selectedGPUDeviceName "NVIDIA RTX A4000"
+ platformPathRemaps ""
+ maxPanels 1
+ NodeColourClass11 "transform mirror crop distort reformat resize cornerpin stabilize FacialExpressions GeoTracker PinTool FaceTracker TransformRiggedGeo  "
+ postage_stamp_mode "Static frame"
+ ArrowColorUp 0xff0000ff
+ expression_arrows false
+ link_knob_arrows false
+ clone_arrows false
+ defaultFlipbook "Flipbook Viewer"
+}

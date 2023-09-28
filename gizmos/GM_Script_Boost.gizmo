@@ -1,0 +1,37 @@
+Group {
+ inputs 0
+ name GM_Script_Boost1
+ tile_color 0xff9455ff
+ selected true
+ xpos 26360
+ ypos 2198
+ addUserKnob {20 User l Script_Boost}
+ addUserKnob {26 postage l "<b><font color=#FFFFFF size=\"4\" >Postage Stamp</font><b>"}
+ addUserKnob {22 postage_dis l "Disable Postage Stamp" t "Allows you to disable the Postage Stamp on all nodes in the script." -STARTLINE T "nodes_classes = \[\"Read\", \"PostageStamp\", \"Constant\", \"ColorBars\", \"CheckerBoard2\", \"ColorWheel\"]\n\nfor node in nuke.allNodes(group=nuke.root()):\n    if node.Class() in nodes_classes:\n        try:\n            node\[\"postage_stamp\"].setValue(False)\n        except Exception:\n            pass\n"}
+ addUserKnob {22 postage_en l "Enable Postage Stamp" t "Allows you to enable the Postage Stamp on all nodes in the script." -STARTLINE T "nodes_classes = \[\"Read\", \"PostageStamp\", \"Constant\", \"ColorBars\", \"CheckerBoard2\", \"ColorWheel\"]\n\nfor node in nuke.allNodes(group=nuke.root()):\n    if node.Class() in nodes_classes:\n        try:\n            node\[\"postage_stamp\"].setValue(True)\n        except Exception:\n            pass\n"}
+ addUserKnob {22 sel_dis l "Disable Selected Postage" t "Allows you to disable the Postage Stamp on selected nodes.\n\n" T "nuke.root().begin()\n\nnodes_classes = \[\"Read\", \"PostageStamp\", \"Constant\", \"ColorBars\", \"CheckerBoard2\", \"ColorWheel\"]\n\nfor node in nuke.selectedNodes():\n    if node.Class() in nodes_classes:\n        try:\n            node\[\"postage_stamp\"].setValue(False)\n        except Exception:\n            pass" +STARTLINE}
+ addUserKnob {22 sel_en l "Enable Selected Postage" t "Allows you to enable the Postage Stamp on selected nodes." -STARTLINE T "nuke.root().begin()\n\nnodes_classes = \[\"Read\", \"PostageStamp\", \"Constant\", \"ColorBars\", \"CheckerBoard2\", \"ColorWheel\"]\n\nfor node in nuke.selectedNodes():\n    if node.Class() in nodes_classes:\n        try:\n            node\[\"postage_stamp\"].setValue(True)\n        except Exception:\n            pass"}
+ addUserKnob {26 node_perf l "<b><font color=#FFFFFF size=\"4\" >Node Performance</font><b>"}
+ addUserKnob {22 perf_show l "Show " t "Allows you to view the nodes performance that are connected to the viewer." -STARTLINE T "nuke.startPerformanceTimers()\n"}
+ addUserKnob {22 perf_res l Reset t "Allows you to reset the performance timer." -STARTLINE T "nuke.resetPerformanceTimers()\n"}
+ addUserKnob {22 perf_hide l Hide t "Allows you to turns off the performance view." -STARTLINE T "nuke.stopPerformanceTimers()\n"}
+ addUserKnob {26 ""}
+ addUserKnob {22 tuts l Tutorial t "Have a look at the tutorial. " -STARTLINE T "import webbrowser\nwebbrowser.open('https://www.gatimedia.co.uk/script-boost')"}
+ addUserKnob {26 ""}
+ addUserKnob {20 info l Information n 1}
+ info 0
+ addUserKnob {26 dropd_text l "" +STARTLINE T "\nWhen you use `Show Node Performance` you need to \nattach the Viewer to the pipe that`s performance you \nwant to view and recommended to `Hide Node Performance` \nwhen you finished as it slows down your script."}
+ addUserKnob {26 link l "" +STARTLINE T "<a href=\"https://learn.foundry.com/nuke/developers/90/pythondevguide/performance.html\"><font color=orange>For more info</a>"}
+ addUserKnob {20 endGroup n -1}
+ addUserKnob {26 ""}
+ addUserKnob {26 TEXT l "" +STARTLINE T "<font color=#808080 size=\"5\" >1.1 version</font>"}
+ addUserKnob {26 HeadlineB l "" +STARTLINE T "<font color=#808080 size=\"2\">GM_Script Boost© by Attila Gasparetz</font>"}
+}
+ Output {
+  inputs 0
+  name Output1
+  selected true
+  xpos -150
+  ypos 158
+ }
+end_group

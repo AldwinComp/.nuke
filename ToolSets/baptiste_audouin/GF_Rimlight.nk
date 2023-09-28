@@ -1,0 +1,238 @@
+set cut_paste_input [stack 0]
+version 12.2 v7
+push $cut_paste_input
+Group {
+ name GF_Rimlight
+ tile_color 0xff5f00ff
+ gl_color 0xff5f00ff
+ selected true
+ xpos -16871
+ ypos -4928
+ addUserKnob {20 User l RimLight}
+ addUserKnob {41 channels T Matrix2.channels}
+ addUserKnob {7 angle l Angle t "Adjust the angle of the rim light" R 0 360}
+ angle 15
+ addUserKnob {26 extend l "Adjust edge"}
+ addUserKnob {7 extend_inside l "Extend Inside" R 0 100}
+ extend_inside 0.8
+ addUserKnob {7 blur_in l "Blur Inside" R 0 100}
+ blur_in 3.4
+ addUserKnob {7 extend_outside l "Extend Outside" R 0 100}
+ extend_outside 1.6
+ addUserKnob {7 blur_out l "Blur Outside" R 0 100}
+ addUserKnob {4 filter l Filter M {Radial Box ""}}
+ filter Box
+ addUserKnob {26 ""}
+ addUserKnob {41 maskChannel l "mask channel" T Keymix1.maskChannel}
+ addUserKnob {41 invertMask l invert -STARTLINE T Keymix1.invertMask}
+ addUserKnob {41 mix T Keymix1.mix}
+ addUserKnob {26 ""}
+ addUserKnob {26 _2 l "" +STARTLINE T "\nCreated by Guy Frutiger 2023\nguyfrutiger.com\n"}
+}
+ BackdropNode {
+  inputs 0
+  name BackdropNode1
+  tile_color 0x71c67100
+  label "Extend Inside"
+  note_font "Bitstream Vera Sans Bold"
+  note_font_size 42
+  xpos 427
+  ypos 123
+  bdheight 268
+ }
+ BackdropNode {
+  inputs 0
+  name BackdropNode2
+  tile_color 0x388e8e00
+  label "Extend Outside"
+  note_font "Bitstream Vera Sans Bold"
+  note_font_size 42
+  xpos 132
+  ypos -136
+  bdwidth 144
+  bdheight 372
+ }
+ Input {
+  inputs 0
+  name Mask
+  xpos 641
+  ypos 468
+  number 1
+ }
+ Invert {
+  channels alpha
+  name Invert1
+  xpos 641
+  ypos 517
+ }
+ Dot {
+  name Dot12
+  xpos 675
+  ypos 582
+ }
+ Input {
+  inputs 0
+  name Img
+  xpos 308
+  ypos -389
+ }
+ Dot {
+  name Dot2
+  xpos 342
+  ypos -312
+ }
+set Nf83f3900 [stack 0]
+ Dot {
+  name Dot3
+  xpos 6
+  ypos -312
+ }
+ Dot {
+  name Dot6
+  xpos 6
+  ypos 183
+ }
+set Nf83f2b00 [stack 0]
+ Dot {
+  name Dot7
+  xpos 6
+  ypos 365
+ }
+set Nf83f2400 [stack 0]
+ Dot {
+  name Dot11
+  xpos 6
+  ypos 582
+ }
+push $Nf83f2b00
+push $Nf83f3900
+ Matrix {
+  matrix {
+      {{-matrix.8} {-matrix.7} {-matrix.6}}
+      {{-matrix.5} 0 {"( angle > 157.5 ?  angle > 337.5 ? clamp((-(angle-360)/22.5), -1, 1) : clamp(((angle-180)/22.5), -1, 1) : clamp((-angle/22.5), -1, 1) )\n\n"}}
+      {{"( angle_135 > 157.5 ?  angle_135 > 337.5 ? clamp((-(angle_135-360)/22.5), -1, 1) : clamp(((angle_135-180)/22.5), -1, 1) : clamp((-angle_135/22.5), -1, 1) ) \n\n"} {"( angle_90 > 157.5 ?  angle_90 > 337.5 ? clamp((-(angle_90-360)/22.5), -1, 1) : clamp(((angle_90-180)/22.5), -1, 1) : clamp((-angle_90/22.5), -1, 1) ) \n\n"} {"( angle_45 > 157.5 ?  angle_45 > 337.5 ? clamp((-(angle_45-360)/22.5), -1, 1) : clamp(((angle_45-180)/22.5), -1, 1) : clamp((-angle_45/22.5), -1, 1) ) \n\n"}}
+    }
+  name Matrix2
+  xpos 308
+  ypos -228
+  addUserKnob {20 User}
+  addUserKnob {7 angle_135 l "angle for 135"}
+  angle_135 {{angle-135}}
+  addUserKnob {7 angle_90 l "angle for 90"}
+  angle_90 {{angle-90}}
+  addUserKnob {7 angle_45 l "angle for 45"}
+  angle_45 {{angle-45}}
+  addUserKnob {7 angle l "Absolute Angle"}
+  angle {{abs(angle2)}}
+  addUserKnob {7 angle2 l angle R -180 180}
+  angle2 {{"(parent.angle-((parent.angle/360)-(fmod((parent.angle/360), 1)))*360)"}}
+ }
+ Dot {
+  name Dot4
+  xpos 342
+  ypos -73
+ }
+set Nf83f0f00 [stack 0]
+ Dot {
+  name Dot9
+  xpos 199
+  ypos -73
+ }
+ FilterErode {
+  channels {{{parent.Matrix2.channels}}}
+  size {{"parent.filter == 1 ? parent.Erode1.size*2 : parent.Erode1.size"}}
+  name FilterErode1
+  xpos 165
+  ypos -15
+ }
+ Erode {
+  channels {{{parent.Matrix2.channels}}}
+  size {{-parent.extend_outside}}
+  name Erode1
+  xpos 165
+  ypos 53
+  disable {{parent.filter}}
+ }
+ Blur {
+  channels {{{parent.Matrix2.channels}}}
+  size {{parent.blur_out}}
+  name Blur2
+  xpos 165
+  ypos 112
+ }
+ Merge2 {
+  inputs 2
+  operation stencil
+  also_merge {{{parent.Matrix2.channels}}}
+  name Merge1
+  xpos 165
+  ypos 179
+ }
+ Dot {
+  name Dot10
+  xpos 198
+  ypos 474
+ }
+push $Nf83f2400
+push $Nf83f0f00
+ Dot {
+  name Dot5
+  xpos 471
+  ypos -73
+ }
+ FilterErode {
+  channels {{{parent.Matrix2.channels}}}
+  size {{"parent.filter == 1 ? parent.Erode2.size*2 : parent.Erode2.size"}}
+  name FilterErode3
+  xpos 437
+  ypos 203
+ }
+ Erode {
+  channels {{{parent.Matrix2.channels}}}
+  size {{-parent.extend_inside}}
+  name Erode2
+  xpos 437
+  ypos 268
+  disable {{parent.filter}}
+ }
+ Blur {
+  channels {{{parent.Matrix2.channels}}}
+  size {{parent.blur_in}}
+  name Blur1
+  xpos 437
+  ypos 315
+ }
+ Merge2 {
+  inputs 2
+  operation multiply
+  also_merge {{{parent.Matrix2.channels}}}
+  name Merge2
+  xpos 437
+  ypos 361
+ }
+ Dot {
+  name Dot8
+  xpos 471
+  ypos 474
+ }
+ Merge2 {
+  inputs 2
+  operation plus
+  also_merge {{{parent.Matrix2.channels}}}
+  name Merge3
+  xpos 308
+  ypos 470
+ }
+ Keymix {
+  inputs 3
+  channels {{{parent.Matrix2.channels}}}
+  name Keymix1
+  xpos 308
+  ypos 572
+ }
+ Output {
+  name Output1
+  xpos 308
+  ypos 652
+ }
+end_group

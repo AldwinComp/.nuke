@@ -1,0 +1,21 @@
+set cut_paste_input [stack 0]
+version 12.2 v7
+push $cut_paste_input
+ColorMatrix {
+matrix {
+    {{parent.Axis2.world_matrix.0} {parent.Axis2.world_matrix.1} {parent.Axis2.world_matrix.2}}
+    {{parent.Axis2.world_matrix.4} {parent.Axis2.world_matrix.5} {parent.Axis2.world_matrix.6}}
+    {{parent.Axis2.world_matrix.8} {parent.Axis2.world_matrix.9} {parent.Axis2.world_matrix.10}}
+  }
+name ColorMatrix1
+selected true
+xpos -3089
+ypos 3497
+}
+Axis2 {
+inputs 0
+name Axis2
+selected true
+xpos -2994
+ypos 3484
+}

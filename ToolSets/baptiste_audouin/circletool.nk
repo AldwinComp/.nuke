@@ -1,0 +1,480 @@
+set cut_paste_input [stack 0]
+version 12.2 v7
+push $cut_paste_input
+Group {
+ name CircleTool
+ knobChanged "n = nuke.thisNode()\nk = n.knob(\"mode\")\nmode = True\nif k.value() == \"manual\":\n    mode = False\nn\[\"amplitude\"].setVisible(mode)\nn\[\"seed\"].setVisible(mode)\nn\[\"frequency\"].setVisible(mode)\nn\[\"offset\"].setVisible(mode)\nn\[\"jaggering\"].setVisible(mode)\nn\[\"manual_degree\"].setVisible(not mode)\nn\[\"random\"].setValue(mode)"
+ selected true
+ xpos -257
+ ypos -60
+ addUserKnob {20 Settings}
+ addUserKnob {41 display_1 l Display T Circle_Tool.display}
+ addUserKnob {26 ""}
+ addUserKnob {4 mode l Mode M {manual random ""}}
+ mode random
+ addUserKnob {41 random +INVISIBLE T Circle_Tool.random}
+ addUserKnob {26 text_1 l " "}
+ addUserKnob {7 manual_degree l "Manual angle" +HIDDEN R 0 360}
+ manual_degree 252
+ addUserKnob {41 manual_degree_hidden +INVISIBLE T Circle_Tool.manual_degree}
+ addUserKnob {41 seed_hidden +INVISIBLE T Circle_Tool.seed}
+ addUserKnob {7 seed}
+ seed 0.585
+ addUserKnob {41 frequency_hidden +INVISIBLE T Circle_Tool.frequency}
+ addUserKnob {7 frequency R 1 300}
+ frequency 1
+ addUserKnob {41 amplitude_hidden +INVISIBLE T Circle_Tool.amplitude}
+ addUserKnob {7 amplitude R 1 360}
+ amplitude 218
+ addUserKnob {41 offset_hidden +INVISIBLE T Circle_Tool.offset}
+ addUserKnob {7 offset R 0 360}
+ offset 166
+ addUserKnob {41 jaggering_hidden +INVISIBLE T Circle_Tool.jaggering}
+ addUserKnob {7 jaggering}
+ jaggering 0.145
+ addUserKnob {41 curve_random l random_curve t "to be becked in the curve editor while playing with the settings" +INVISIBLE T Circle_Tool.random_degree}
+ addUserKnob {26 ""}
+ addUserKnob {26 "" -STARTLINE T "\n<b>Ellipse settings</b>"}
+ addUserKnob {41 a T Circle_Tool.a}
+ addUserKnob {41 b T Circle_Tool.b}
+ addUserKnob {12 center_position l "center position"}
+ center_position {1071 905}
+ addUserKnob {41 radius_out l "radius out" T Circle_Tool.radius_out}
+ addUserKnob {41 radius_in l "radius in" T Circle_Tool.radius_in}
+ addUserKnob {26 ""}
+ addUserKnob {26 "" -STARTLINE T "<b>Values out</b>"}
+ addUserKnob {41 out T Circle_Tool.out}
+ addUserKnob {41 in T Circle_Tool.in}
+ addUserKnob {26 ""}
+ addUserKnob {26 _1 l "" +STARTLINE T "<i><font color='grey'>CircleTool v1.0 2022 Baptiste Audouin - https://baptiste-audouin.com/</font></i>\n"}
+}
+ Input {
+  inputs 0
+  name Input1
+  xpos -325
+  ypos 574
+ }
+ Dot {
+  name Dot1
+  xpos -291
+  ypos 665
+ }
+set N35af0800 [stack 0]
+ Constant {
+  inputs 0
+  channels rgb
+  color 1
+  format "7 7 0 0 7 7 1 dot"
+  name Constant20
+  xpos 130
+  ypos -117
+ }
+ Roto {
+  output alpha
+  cliptype none
+  outputMask rgba.alpha
+  curves {{{v x3f99999a}
+  {f 0}
+  {n
+   {layer Root
+    {f 2097664}
+    {t x44800000 x44100000}
+    {a pt1x 0 pt1y 0 pt2x 0 pt2y 0 pt3x 0 pt3y 0 pt4x 0 pt4y 0 ptex00 0 ptex01 0 ptex02 0 ptex03 0 ptex10 0 ptex11 0 ptex12 0 ptex13 0 ptex20 0 ptex21 0 ptex22 0 ptex23 0 ptex30 0 ptex31 0 ptex32 0 ptex33 0 ptof1x 0 ptof1y 0 ptof2x 0 ptof2y 0 ptof3x 0 ptof3y 0 ptof4x 0 ptof4y 0 pterr 0 ptrefset 0 ptmot x40800000 ptref 0}
+    {curvegroup Ellipse1 512 bezier
+     {{cc
+       {f 8192}
+       {px x40000000
+        {{{xbf9450f4 0 1 xb8b51935 1}}
+      {{0 -}}}
+        {{{x4061053e 0 1 x3b1c7fa4 1}}
+      {{x3fa04d70 0 1 x3b1eb6b3 1}}}
+        {{{x3f9452e0 0 1 x38b51be7 1}}
+      {{0 -}}}
+        {{{0 -}}
+      {{xbf9ac75e 0 1 xb823527a 1}}}
+        {{{x40b3a67a 0 1 x3b26bede 1}}
+      {{x405c467f 0 1 x3b235596 1}}}
+        {{{0 -}}
+      {{x3f9ac760 0 1 x3823523c 1}}}
+        {{{x3f9452e0 0 1 x38b51be7 1}}
+      {{0 -}}}
+        {{{x4061053e 0 1 x3b1c7fa4 1}}
+      {{x40b43347 0 1 x3b27f46e 1}}}
+        {{{xbf9450f4 0 1 xb8b51935 1}}
+      {{0 -}}}
+        {{{0 -}}
+      {{x3f9ac760 0 1 x3823523c 1}}}
+        {{{x3fb57e79 0 1 x3b124042 1}}
+      {{x405c467f 0 1 x3b235596 1}}}
+        {{{0 -}}
+      {{xbf9ac75e 0 1 xb823527a 1}}}}}     idem}
+     {tx x44af2000 x44802000 x440fd99a}
+     {a osw x41200000 osf 0 str 1 spx x44800000 spy x44100000 sb 1 ltn x44af2000 ltm x44af2000 tt x40e00000 ff 0}}}}}}
+  toolbox {selectAll {
+  { selectAll str 1 ssx 1 ssy 1 sf 1 }
+  { createBezier str 1 ssx 1 ssy 1 sf 1 sb 1 tt 4 }
+  { createBezierCusped str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { createBSpline str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { createEllipse str 1 ssx 1 ssy 1 sf 1 sb 1 tt 7 }
+  { createRectangle str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { createRectangleCusped str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { brush str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { eraser src 2 str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { clone src 1 str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { reveal src 3 str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { dodge src 1 str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { burn src 1 str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { blur src 1 str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { sharpen src 1 str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { smear src 1 str 1 ssx 1 ssy 1 sf 1 sb 1 }
+} }
+  toolbar_brush_hardness 0.200000003
+  toolbar_source_transform_scale {1 1}
+  toolbar_source_transform_center {1024 576}
+  colorOverlay {0 0 0 0}
+  lifetime_type "all frames"
+  lifetime_start 1401
+  lifetime_end 1401
+  motionblur_shutter_offset_type centred
+  feather_falloff 0
+  source_black_outside true
+  name Roto12
+  xpos 131
+  ypos -13
+ }
+set N6a3200 [stack 0]
+ Transform {
+  translate {3.5 3.5}
+  scale 1.8
+  center {3.5 3.5}
+  name Transform3
+  label "SCALE_UP\n"
+  xpos 667
+  ypos -13
+ }
+ Constant {
+  inputs 0
+  channels rgb
+  format "14 14 0 0 14 14 1 big_dot"
+  name Constant2
+  xpos 840
+  ypos -133
+ }
+ Copy {
+  inputs 2
+  from0 rgba.alpha
+  to0 rgba.alpha
+  name Copy1
+  xpos 841
+  ypos -13
+ }
+ Reformat {
+  resize none
+  name Reformat2
+  label centered
+  xpos 840
+  ypos 49
+ }
+ Dot {
+  name Dot8
+  xpos 873
+  ypos 117
+ }
+set N7a3200 [stack 0]
+ Dot {
+  name Dot5
+  xpos 1033
+  ypos 117
+ }
+ Expression {
+  expr2 1
+  name Expression2
+  label RED
+  xpos 999
+  ypos 161
+ }
+ Premult {
+  name Premult4
+  xpos 999
+  ypos 230
+ }
+ Transform {
+  translate {{Circle_Tool.a_out*cos(Circle_Tool.manual_radian)} {Circle_Tool.b_out*sin(Circle_Tool.manual_radian)}}
+  center {{format.w/2} {format.h/2}}
+  name Transform10
+  label IN
+  xpos 999
+  ypos 280
+ }
+ Dot {
+  name Dot6
+  xpos 1033
+  ypos 467
+ }
+push $N7a3200
+ Expression {
+  expr0 1
+  name Expression1
+  label BLUE
+  xpos 839
+  ypos 158
+ }
+ Premult {
+  name Premult1
+  xpos 838
+  ypos 231
+ }
+ Transform {
+  translate {{Circle_Tool.a_in*cos(Circle_Tool.manual_radian)} {Circle_Tool.b_in*sin(Circle_Tool.manual_radian)}}
+  center {{format.w/2} {format.h/2}}
+  name Transform9
+  label OUT
+  xpos 838
+  ypos 280
+ }
+ Merge2 {
+  inputs 2
+  operation plus
+  name Merge4
+  xpos 838
+  ypos 464
+ }
+ Dot {
+  name Dot3
+  xpos 874
+  ypos 844
+ }
+push $N6a3200
+ Premult {
+  name Premult3
+  xpos 131
+  ypos 49
+ }
+ Reformat {
+  resize none
+  name Reformat1
+  label centered
+  xpos 131
+  ypos 99
+ }
+set N771d00 [stack 0]
+ Dot {
+  name Dot4
+  xpos 468
+  ypos 108
+ }
+ Transform {
+  translate {{Circle_Tool.a_in*cos(Circle_Tool.radian_angle)} {Circle_Tool.b_in*sin(Circle_Tool.radian_angle)}}
+  center {{format.w/2} {format.h/2}}
+  filter impulse
+  name Transform2
+  label "IN\n"
+  xpos 432
+  ypos 280
+ }
+set N770f00 [stack 0]
+ TimeEcho {
+  mode Plus
+  framesbehind 36
+  name TimeEcho4
+  label manual
+  xpos 363
+  ypos 357
+ }
+push $N770f00
+ TimeEcho {
+  mode Plus
+  framesbehind {{Circle_Tool.amplitude/10+1}}
+  frmaesfade 0
+  name TimeEcho2
+  label random
+  xpos 510
+  ypos 359
+ }
+ Switch {
+  inputs 2
+  which {{1-parent.Circle_Tool.random}}
+  name Switch4
+  label manual/random
+  xpos 421
+  ypos 441
+ }
+ FrameHold {
+  name FrameHold2
+  xpos 421
+  ypos 491
+ }
+ Dot {
+  name Dot2
+  xpos 455
+  ypos 661
+ }
+push $N771d00
+ Transform {
+  translate {{Circle_Tool.a_out*cos(Circle_Tool.radian_angle)} {Circle_Tool.b_out*sin(Circle_Tool.radian_angle)}}
+  center {{format.w/2} {format.h/2}}
+  filter impulse
+  name Transform1
+  label OUT
+  xpos 129
+  ypos 272
+ }
+set N746400 [stack 0]
+ TimeEcho {
+  framesbehind 36
+  frmaesfade 0
+  name TimeEcho3
+  label manual
+  xpos 57
+  ypos 355
+ }
+push $N746400
+ TimeEcho {
+  framesbehind {{Circle_Tool.amplitude/10+1}}
+  frmaesfade 0
+  name TimeEcho1
+  label random
+  xpos 202
+  ypos 352
+ }
+ Switch {
+  inputs 2
+  which {{1-parent.Circle_Tool.random}}
+  name Switch3
+  label manual/random
+  xpos 129
+  ypos 441
+ }
+ FrameHold {
+  name FrameHold1
+  xpos 129
+  ypos 491
+ }
+ Merge2 {
+  inputs 2
+  name Merge2
+  xpos 129
+  ypos 658
+ }
+set N744100 [stack 0]
+ Merge2 {
+  inputs 2
+  name Merge3
+  xpos 322
+  ypos 847
+ }
+push $N744100
+ Switch {
+  inputs 2
+  which {{1-parent.Circle_Tool.random}}
+  name Switch2
+  label manual/random
+  xpos 129
+  ypos 841
+ }
+ Transform {
+  translate {{parent.center_position-center.x} {parent.center_position-center.y}}
+  center {{format.w/2} {format.h/2}}
+  name center5
+  label center_position
+  xpos 129
+  ypos 891
+ }
+set N70eb00 [stack 0]
+push $N35af0800
+ Dot {
+  name Dot7
+  xpos -70
+  ypos 665
+ }
+ Merge2 {
+  inputs 2
+  bbox B
+  name Merge1
+  xpos -104
+  ypos 891
+ }
+ Switch {
+  inputs 2
+  which {{1-parent.Circle_Tool.display}}
+  name Switch1
+  label display
+  xpos -325
+  ypos 885
+ }
+ Output {
+  name Output1
+  xpos -325
+  ypos 976
+ }
+ NoOp {
+  inputs 0
+  name Circle_Tool
+  xpos -323
+  ypos 141
+  hide_input true
+  addUserKnob {20 User}
+  addUserKnob {6 random +STARTLINE}
+  random true
+  addUserKnob {7 seed R 0 100}
+  seed {{parent.seed}}
+  addUserKnob {7 frequency R 1 300}
+  frequency {{parent.frequency}}
+  addUserKnob {7 amplitude R 1 360}
+  amplitude {{parent.amplitude}}
+  addUserKnob {7 offset t "\t\t\t\t\t\t" R 0 360}
+  offset {{parent.offset}}
+  addUserKnob {7 jaggering R 0.001 1}
+  jaggering {{parent.jaggering}}
+  addUserKnob {26 ""}
+  addUserKnob {7 random_degree R 0 360}
+  random_degree {{"inrange (frame, root.first_frame, root.last_frame) ?\n(int((random(seed, frame*frequency)*(-amplitude))*jaggering)/jaggering+offset)\n: 0"}}
+  addUserKnob {7 random_radian R 0 6.28319}
+  random_radian {{random_degree*(pi/180)}}
+  addUserKnob {26 ""}
+  addUserKnob {7 manual_degree R 0 360}
+  manual_degree {{parent.manual_degree}}
+  addUserKnob {7 manual_radian R 0 6.28319}
+  manual_radian {{manual_degree*(pi/180)}}
+  addUserKnob {26 ""}
+  addUserKnob {7 radius_out l "radius out" R 20 1000}
+  radius_out 31
+  addUserKnob {7 radius_in l "radius in" R 0 1000}
+  radius_in 555
+  addUserKnob {7 a_out R 50 1000}
+  a_out {{radius_out*a}}
+  addUserKnob {7 a_in}
+  a_in {{radius_in*a}}
+  addUserKnob {7 a}
+  a 0.32
+  addUserKnob {7 b_out R 50 1000}
+  b_out {{radius_out*b}}
+  addUserKnob {7 b_in}
+  b_in {{radius_in*b}}
+  addUserKnob {7 b}
+  b 1
+  addUserKnob {26 ""}
+  addUserKnob {12 out}
+  out {{"Circle_Tool.random == 1 ?      a_out*cos(random_radian)+Circle_Tool.center_position.x     :     a_out*cos(manual_radian)+Circle_Tool.center_position.x" x1 998.5} {"Circle_Tool.random == 1 ?      b_out*sin(random_radian)+Circle_Tool.center_position.y     :     b_out*sin(manual_radian)+Circle_Tool.center_position.y" x1 596}}
+  addUserKnob {12 in}
+  in {{"Circle_Tool.random == 1 ?      a_in*cos(random_radian)+Circle_Tool.center_position.x     :     a_in*cos(manual_radian)+Circle_Tool.center_position.x"} {"Circle_Tool.random == 1 ?      b_in*sin(random_radian)+Circle_Tool.center_position.y     :     b_in*sin(manual_radian)+Circle_Tool.center_position.y"}}
+  addUserKnob {12 center_position}
+  center_position {{parent.center_position.x x1 1071 x1396 774.5 x1532 938} {parent.center_position.y x1 905 x1396 656.5 x1532 449}}
+  addUserKnob {26 ""}
+  addUserKnob {6 display +STARTLINE}
+  display true
+  addUserKnob {7 degrees_angle R 0 360}
+  degrees_angle {{"frame <= 36? \nCircle_Tool.random == 1? \nframe*10+(Circle_Tool.offset)  :\nframe*10\n\n: 0\n"}}
+  addUserKnob {7 radian_angle R 0 6.28319}
+  radian_angle {{degrees_angle*(pi/180)}}
+ }
+push $N70eb00
+ Viewer {
+  frame_range 1001-1582
+  fps 25
+  full_frame_processing true
+  name Viewer1
+  xpos 279
+  ypos 1070
+ }
+end_group

@@ -1,0 +1,13 @@
+set cut_paste_input [stack 0]
+version 12.2 v7
+push $cut_paste_input
+BlinkScript {
+ ProgramGroup 1
+ kernelSource "\nkernel BlankKernel : ImageComputationKernel<ePixelWise>\n\{\n  Image<eRead, eAccessPoint, eEdgeClamped> src; // the input image\n  Image<eWrite> dst; // the output image\n\n  param:\n  \n\n  local:\n\n  // In define(), parameters can be given labels and default values.\n  void define() \{\n\n  \}\n\n  // The init() function is run before any calls to process().\n  // Local variables can be initialized here.\n  void init() \{\n\n  \}\n\n  void process() \{\n    // Write the result to the output image\n    dst() = src();\n  \}\n\};\n"
+ rebuild ""
+ rebuild_finalise ""
+ name BlinkScript1
+ selected true
+ xpos -6274
+ ypos -735
+}

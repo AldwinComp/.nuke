@@ -1,0 +1,36 @@
+set cut_paste_input [stack 0]
+version 12.2 v7
+BackdropNode {
+ inputs 0
+ name BackdropNode1
+ tile_color 0x8e388e00
+ label "Cool nodes I didn't know"
+ note_font_size 42
+ selected true
+ xpos -6100
+ ypos -1050
+ bdwidth 320
+ bdheight 110
+}
+push $cut_paste_input
+BlackOutside {
+ name BlackOutside1
+ selected true
+ xpos -6090
+ ypos -970
+}
+Radial {
+ inputs 0
+ area {512 389 1536 1167}
+ name Radial2
+ selected true
+ xpos -5980
+ ypos -970
+}
+Position {
+ inputs 0
+ name Position1
+ selected true
+ xpos -5870
+ ypos -970
+}
